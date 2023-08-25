@@ -34,19 +34,24 @@ CC = nvcc
 # Program's name:
 PROG = MC-GPU_v1.3.x
 
-# Include and library paths:
-CUDA_PATH = /usr/local/cuda/include/
-CUDA_LIB_PATH = /usr/local/cuda/lib64/
-CUDA_SDK_PATH = /usr/local/cuda/samples/common/inc/
-CUDA_SDK_LIB_PATH = /usr/local/cuda/samples/common/lib/linux/x86_64/
-OPENMPI_PATH = /usr/include/openmpi
+# You should modify these according to your machine.
+NVCC = /usr/local/cuda-10.1/bin/nvcc
+CUDA_INCLUDE = /usr/local/cuda-10.1/include/
+CUDA_LIB = /usr/local/cuda-10.1/lib64/
+CUDA_SDK_INCLUDE = /usr/local/cuda-10.1/samples/common/inc/
+CUDA_SDK_LIB = /usr/local/cuda-10.1/samples/common/lib/linux/x86_64/
+OPENMPI_INCLUDE = /home/wangzh/workspace/app/openmpi-4.1.1/install/include/
+OPENMPI_LIB = /home/wangzh/workspace/app/openmpi-4.1.1/install/lib/
+ZLIB_INCLUDE = /home/wangzh/workspace/app/zlib-1.2.11/install/include/
+ZLIB_LIB = /home/wangzh/workspace/app/zlib-1.2.11/install/lib/
 
-
-# Compiler's flags:
-CFLAGS = -O3 -use_fast_math -m64 -DUSING_CUDA -DUSING_MPI -I./ -I$(CUDA_PATH) -I$(CUDA_SDK_PATH) -L$(CUDA_SDK_LIB_PATH) -L$(CUDA_LIB_PATH) -lcudart -lm -lz -I$(OPENMPI_PATH) -lmpi --ptxas-options=-v 
-#  NOTE: you can compile the code for a specific GPU compute capability. For example, for compute capabilities 5.0 and 6.1, use flags:
-#    -gencode=arch=compute_50,code=sm_50 -gencode=arch=compute_61,code=sm_61
-
+CFLAGS = -O3 -use_fast_math -m64 -DUSING_CUDA -DUSING_MPI \
+	-I./ -I$(CUDA_INCLUDE) -I$(CUDA_SDK_INCLUDE) -I$(OPENMPI_INCLUDE) -I$(ZLIB_INCLUDE) \
+	-L$(CUDA_SDK_LIB) -L$(CUDA_LIB) -lcudart \
+	-lm \
+	-L$(ZLIB_LIB) -lz \
+	-L$(OPENMPI_LIB) -lmpi \
+	--ptxas-options=-v
 
 # Command to erase files:
 RM = /bin/rm -vf
@@ -57,7 +62,7 @@ SRCS = MC-GPU_v1.3.cu
 # Building the application:
 default: $(PROG)
 $(PROG):
-	$(CC) $(CFLAGS) $(SRCS) -o $(PROG)
+	$(NVCC) $(CFLAGS) $(SRCS) -o $(PROG)
 
 # Rule for cleaning re-compilable files
 clean:
